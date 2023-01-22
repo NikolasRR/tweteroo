@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Tweet {
   
   public Tweet(TweetDTO tweet) {
-    this.tweet = tweet.tweet();
+    this.text = tweet.tweet();
     this.username = tweet.username();
   }
 
@@ -27,7 +27,7 @@ public class Tweet {
   public Long id;
 
   @Column(length = 300, nullable = false)
-  public String tweet;
+  public String text;
 
   @Column(length = 20, nullable = false)
   public String username;
