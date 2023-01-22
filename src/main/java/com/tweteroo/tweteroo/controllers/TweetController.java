@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +33,10 @@ public class TweetController {
   @GetMapping
   public List<BuildedTweet> getTweets(@RequestParam("page") int page) {
     return service.getTweets(page);
+  }
+
+  @GetMapping("/{username}")
+  public List<BuildedTweet> getuserTweets(@PathVariable String username, @RequestParam("page") int page) {
+    return service.getTweetsByUsername(username, page);
   }
 }

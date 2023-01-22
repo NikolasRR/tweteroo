@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +24,7 @@ public class TweetService {
   private UserRepo userRepo;
 
   public void saveTweet(TweetDTO tweet) {
-    var user = userRepo.findByUsername(tweet.username());
-    if (user.isEmpty()) throw new Error();
-
+    this.userExists(tweet.username());
     tweetRepo.save(new Tweet(tweet));
   }
 
@@ -43,5 +40,20 @@ public class TweetService {
     return buildedTweets;
   }
 
+  public List<BuildedTweet> getTweetsByUsername(String username, int page) {
+    this.userExists(username);
 
+    var tweets = tweetRepo.findByUsername(username, PageRequest.of(page, 5).withSort(Direction.DESC, "id"));
+    var user = userRepo.findByUsername(username).get(0);
+
+    List<BuildedTweet> buildedTweets = new ArrayList<>();
+    tweets.getContent().forEach(tweet -> buildedTweets.add(new BuildedTweet(tweet, user.avatar)));
+
+    return  buildedTweets;
+  }
+
+  private void userExists(String username) {
+    var user = userRepo.findByUsername(username);
+    if (user.isEmpty()) throw new Error(); 
+  }
 }
