@@ -2,6 +2,8 @@ package com.tweteroo.tweteroo.services;
 
 import java.util.List;
 
+import javax.security.auth.login.AccountException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,9 @@ public class UserService {
   @Autowired
   private UserRepo repo;
 
-  public void saveUser(UserDTO user) {
+  public void saveUser(UserDTO user) throws AccountException{
     if (Boolean.TRUE.equals(this.usernameTaken(user.username())))
-      throw new Error();
+      throw new AccountException("username já está em uso");
 
     repo.save(new User(user));
   }

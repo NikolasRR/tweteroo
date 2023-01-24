@@ -12,20 +12,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tweteroo.tweteroo.DTOs.TweetDTO;
+import com.tweteroo.tweteroo.middlewares.ErrorHandler;
 import com.tweteroo.tweteroo.models.BuildedTweet;
 import com.tweteroo.tweteroo.services.TweetService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 
 @RestController
 @RequestMapping("/tweets")
-public class TweetController {
+public class TweetController extends ErrorHandler{
 
   @Autowired
   private TweetService service;
 
   @PostMapping
-  public String save(@RequestBody @Valid TweetDTO tweet) {
+  public String save(@RequestBody @Valid TweetDTO tweet) throws ValidationException {
     service.saveTweet(tweet);
     return "OK";
   }
@@ -36,7 +38,7 @@ public class TweetController {
   }
 
   @GetMapping("/{username}")
-  public List<BuildedTweet> getuserTweets(@PathVariable String username, @RequestParam("page") int page) {
+  public List<BuildedTweet> getuserTweets(@PathVariable String username, @RequestParam("page") int page) throws ValidationException {
     return service.getTweetsByUsername(username, page);
   }
 }

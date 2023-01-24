@@ -9,13 +9,16 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.tweteroo.tweteroo.DTOs.TweetDTO;
+import com.tweteroo.tweteroo.middlewares.ErrorHandler;
 import com.tweteroo.tweteroo.models.BuildedTweet;
 import com.tweteroo.tweteroo.models.Tweet;
 import com.tweteroo.tweteroo.repositories.TweetRepo;
 import com.tweteroo.tweteroo.repositories.UserRepo;
 
+import jakarta.validation.ValidationException;
+
 @Service
-public class TweetService {
+public class TweetService extends ErrorHandler {
   
   @Autowired
   private TweetRepo tweetRepo;
@@ -23,7 +26,7 @@ public class TweetService {
   @Autowired
   private UserRepo userRepo;
 
-  public void saveTweet(TweetDTO tweet) {
+  public void saveTweet(TweetDTO tweet) throws ValidationException {
     this.userExists(tweet.username());
     tweetRepo.save(new Tweet(tweet));
   }
@@ -40,7 +43,7 @@ public class TweetService {
     return buildedTweets;
   }
 
-  public List<BuildedTweet> getTweetsByUsername(String username, int page) {
+  public List<BuildedTweet> getTweetsByUsername(String username, int page) throws ValidationException {
     this.userExists(username);
 
     var tweets = tweetRepo.findByUsername(username, PageRequest.of(page, 5).withSort(Direction.DESC, "id"));
@@ -52,8 +55,8 @@ public class TweetService {
     return  buildedTweets;
   }
 
-  private void userExists(String username) {
+  private void userExists(String username) throws ValidationException {
     var user = userRepo.findByUsername(username);
-    if (user.isEmpty()) throw new Error(); 
+    if (user.isEmpty()) throw new ValidationException("username não cadastrado"); 
   }
 }
